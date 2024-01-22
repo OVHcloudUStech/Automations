@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Check if an argument is provided
 if [ -z "$1" ]; then
     echo "Usage: $0 <IP or hostname>"
     exit 1
@@ -19,10 +20,13 @@ ping -c 5 "$target"
 
 # Traceroute test
 echo "Traceroute test:"
-traceroute "$target"
+if ! command -v traceroute &> /dev/null
+then
+    echo "traceroute could not be found, please install it."
+else
+    traceroute "$target"
+fi
 
-# Port scanning
-echo "Port scanning:"
-for port in {1..65535}; do
-    (echo >/dev/tcp/"$target"/"$port") >/dev/null 2>&1 && echo "$port open"
-done
+# Port scanning with nmap
+echo "Port scanning with nmap:"
+nmap -p 1-65535 "$target"
